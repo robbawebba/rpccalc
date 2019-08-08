@@ -15,22 +15,26 @@ type FifoConn struct {
 
 // Read reads all data from the request pipe. If the request pipe has not yet beeen
 // opened, this function will first attempt to open the pipe.
-func (f *FifoConn) Read(buf []byte) (n int, err error) {
+func (f *FifoConn) Read(buf []byte) (int, error) {
 	if f.request == nil {
-		if f.request, err = os.OpenFile(f.RequestPath, os.O_RDONLY, 0600); err != nil {
+		reqFile, err := os.OpenFile(f.RequestPath, os.O_RDONLY, 0600)
+		if err != nil {
 			return 0, err
 		}
+		f.request = reqFile
 	}
 	return f.request.Read(buf)
 }
 
 // Write sends all data in buf to the response pipe. If the response pipe has not
 // yet beeen opened, this function will first attempt to open the pipe.
-func (f *FifoConn) Write(buf []byte) (n int, err error) {
+func (f *FifoConn) Write(buf []byte) (int, error) {
 	if f.response == nil {
-		if f.response, err = os.OpenFile(f.ResponsePath, os.O_WRONLY, 0600); err != nil {
+		respFile, err := os.OpenFile(f.ResponsePath, os.O_WRONLY, 0600)
+		if err != nil {
 			return 0, err
 		}
+		f.response = respFile
 	}
 	return f.response.Write(buf)
 }
@@ -45,6 +49,14 @@ func (f *FifoConn) Close() error {
 
 // SetWriteDeadline sets the write deadline for writing to the response pipe.
 func (f *FifoConn) SetWriteDeadline(t time.Time) error {
+	if f.response == nil {
+		respFile, err := os.OpenFile(f.ResponsePath, os.O_WRONLY, 0600)
+		if err != nil {
+			return err
+		}
+		f.response = respFile
+	}
+
 	return f.response.SetWriteDeadline(t)
 }
 
