@@ -1,19 +1,28 @@
 # rpccalc
 
-A JSON-RPC 2.0 service over a variety of transports
+A JSON-RPC 2.0 calculator service that supports a variety of transports
 
 ## Server Installation and Running
 1. Clone this repository: `$ go get github.com/robbawebba/rpccalc/cmd/calcd`
-2. Run the application! `$ calcd help` or `calcd fifo`
+2. Run the application!
+
+  ```
+  $ calcd help
+  ```
 
   If `$GOPATH/bin` is not in your `$PATH` environment variable, then you will
-  likely have to build the server manually before running:
+  likely have to use an absolute path to run the program or build the program
+  manually:
+
   ```bash
+  # Absolute path to calcd
+  $ $GOPATH/bin/calcd help
+  # or build yourself
   $ go build github.com/robbawebba/rpccalc/cmd/calcd
   $ ./calcd help
   ```
 
-## Supported transports
+## Supported Transports
 ### fifo
 The `calcd fifo` command starts a server using two named pipes, a request pipe and a response pipe, for transportation. It only supports one client connection at a time.
 
