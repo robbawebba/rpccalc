@@ -27,6 +27,7 @@ func main() {
 
 	app.Commands = []cli.Command{
 		fifoCommand,
+		tcpCommand,
 	}
 
 	err := app.Run(os.Args)

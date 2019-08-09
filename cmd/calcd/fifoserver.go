@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"syscall"
 
@@ -52,6 +53,7 @@ func listenAndServeFifo(c *cli.Context) error {
 
 	conn := rpccalc.NewFifoConn(reqPath, respPath)
 	defer conn.Close()
+	log.Printf("Listening for requests at %s and sending responses to %s...\n", reqPath, respPath)
 
 	// Continuously handle requests on the connection.
 	// Note that the server blocks internally while opening the request pipe for
