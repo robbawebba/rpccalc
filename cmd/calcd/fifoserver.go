@@ -17,7 +17,7 @@ var fifoCommand = cli.Command{
 	Aliases:   []string{"f"},
 	Usage:     "Start the calculator service using named pipes / fifos as the transport",
 	Action:    listenAndServeFifo,
-	ArgsUsage: "[requestPipe] [responsePipe]",
+	ArgsUsage: "[/path/to/request/pipe] [/path/to/request/pipe]",
 	Before:    initServer,
 }
 
