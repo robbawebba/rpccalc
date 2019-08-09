@@ -75,3 +75,38 @@ $ for i in {0..10}; do
 ```
 
 See the output of `calcd help tcp` for usage information.
+
+## Design Notes
+
+`rpccalc.FifoConn` is an easily interchangeable RPC server transport because it
+satisfies the `net.Conn` and `rpc.Conn` interfaces that allow generic reading and
+writing of streamable data. The only differences between the TCP and fifo servers
+found in `cmd/calcd` are the boilerplate logic needed to initialize the the different
+connections. The RPC server has no knowledge or preference for the sort of connection
+it receives when handling a request. As long as the RPC server can read to and write
+from the connection it receives, it's requirements are satisfied.
+
+
+Although `rpccalc.FifoConn` implements a common networking interface, `net.Conn` that
+supports streaming communication like a TCP connection, the nature of named pipes
+causes the `FifoConn` to behave quite differently. Named pipes do not easily support
+multiple connected clients, or writers, on the same pipe. It will often lead to undefined
+results. This is very different from the behavior of Unix and TCP sockets that support
+multiple simultaneous connections on a single socket.
+
+### Next Steps
+
+I would like to improve the operations related to the named pipes. I feel that the
+methods are missing a couple of safety features that would provide a more stable
+experience for users of the Fifo-based connection. Some packages that provide
+some inspiration for further development include https://github.com/containerd/fifo/
+and https://github.com/natefinch/npipe.
+
+I would also like to explore the possibility of demonstrating a REST API and RPC
+server side-by-side. the HTTP transport system that would be used for the REST API
+could easily make use of the `rpccalc.CalculatorService` method definitions by
+Wrapping them in functions that implements the [`http.Handler`](https://golang.org/pkg/net/http/#Handler)
+interface. This interface allows the developer to create a composable system of HTTP
+handlers for a variety of routes with [`http.ServeMux`](https://golang.org/pkg/net/http/#ServeMux).
+I would use these tools to create a router for the `/add` and `/subtract` routes
+and then listen for and serve HTTP requests for these routes.
