@@ -41,9 +41,14 @@ func (f *FifoConn) Write(buf []byte) (int, error) {
 
 // Close closes both the request and response pipe
 func (f *FifoConn) Close() error {
-	f.request.Close()
-	f.response.Close()
-	f.response, f.request = nil, nil
+	if f.request != nil {
+		f.request.Close()
+		f.request = nil
+	}
+	if f.response != nil {
+		f.response.Close()
+		f.response = nil
+	}
 	return nil
 }
 
